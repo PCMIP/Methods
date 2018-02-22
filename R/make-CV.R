@@ -22,7 +22,7 @@ make_CV <- function(y, X, model_name, k_fold) {
 make_CV_fold <- function (i, model_name=model_name, y=y, X=X, folds) {
 
   library(rioja)
-  library(analogue)
+  # library(analogue)
 
   ## setup cross-validation training and test data
   idx_test <- which(folds == i, arr.ind=TRUE)
