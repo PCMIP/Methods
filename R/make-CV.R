@@ -11,7 +11,8 @@ make_CV <- function(y, X, model_name, k_fold) {
   folds <- cut(sample(1:N, N), breaks=k_fold, labels=FALSE)
 
   ## run the cross-validation subroutine, can parallelize this later
-  out <- sapply(1:k_fold, make_CV_fold, model_name=model_name, y=y, X=X,
+  foo <- seq(1, k_fold)
+  out <- sapply(1:2, fun=make_CV_fold, model_name=model_name, y=y, X=X,
                 folds=folds)
 
   return(list(CRPS=out$CRPS, MSPE=out$MSPE, MAE=out$MAE, coverage=out$coverage))
@@ -19,7 +20,7 @@ make_CV <- function(y, X, model_name, k_fold) {
 
 
 
-make_CV_fold <- function (i, model_name=model_name, y=y, X=X, folds) {
+make_CV_fold <- function (i, model_name=model_name, y=y, X=X, folds=folds) {
 
   library(rioja)
   # library(analogue)

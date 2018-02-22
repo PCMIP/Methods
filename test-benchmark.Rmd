@@ -1,0 +1,44 @@
+---
+title: "Benchmark"
+author: "John Tipton"
+date: "2/22/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+```
+
+```{r}
+dat <- readRDS("~/benchmark-data/Pollen/Whitmore/whitmore_pollen.rds")
+str(dat)
+y <- as.matrix(dat[[1]])
+## drop site name
+sitenames <- y[, 1]
+y <- y[, -1]
+names <- colnames(y)
+y <- matrix(as.numeric(y), dim(y))
+colnames(y) <- names
+rownames(y) <- sitenames
+str(y)
+```
+
+```{r}
+clim <- read.csv("~/benchmark-data/Pollen/Whitmore/whitmore_worldclim_10min.csv")
+str(clim)
+X <- clim$Tann
+names(X) <- as.character(clim$SITENAME)
+all.equal(rownames(y), names(X))
+## get same values
+X <- X[match(rownames(y), names(X))]
+y <- y[match(names(X), rownames(y)), ]
+all.equal(rownames(y), names(X))
+```
+
+
+```{r}
+library(Methods)
+make_CV(y=y, X=X, model_name="WA", k_fold=2)
+make_CV()
+```
