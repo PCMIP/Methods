@@ -1,4 +1,4 @@
-# fits weighted-averaging model on cross-validation data
+# fits weighted-averaging partial least squares model on cross-validation data
 # y_train_prop A data frame of relative abundances of size N_site by N_taxa 
 # X_train A data frame of the climate covariate of size N_site by 1
 # sse Sum of Squared Error ...
