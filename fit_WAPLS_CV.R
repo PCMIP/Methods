@@ -10,15 +10,15 @@
 # CRPS Continuous Ranked Probability Score
 # coverage Empirical 95% coverage rate
 
-fit_WAPLS_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
+fit_WAPLS_CV <- function(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nboot=1000, ...) {
   ## WAPLS reconstruction - subset to deal with all zero occurrence species
   zeros_idx <- which(colSums(y_train_prop) == 0)
   if (length(zeros_idx) > 0) {
     modWAPLS <- rioja::WAPLS(y_train_prop[, - zeros_idx], X_train)     
-    predWAPLS <- predict(modWAPLS, y_test_prop, sse=TRUE, nboot=1000)
+    predWAPLS <- predict(modWAPLS, y_test_prop, sse=sse, nboot=nboot)
   } else {
     modWAPLS <- rioja::WAPLS(y_train_prop, X_train)     
-    predWAPLS <- predict(modWAPLS, y_test_prop, sse=TRUE, nboot=1000)
+    predWAPLS <- predict(modWAPLS, y_test_prop, sse=sse, nboot=nboot)
   }
   CRPS <- makeCRPSGauss(predWAPLS$fit[, 1], sqrt(predWAPLS$v1.boot[, 1]),
                         X_test)
@@ -26,7 +26,7 @@ fit_WAPLS_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
   MAE <- abs(predWAPLS$fit[, 1] - X_test)
   coverage <- (
     X_test >=
-      (predWAPLS$fit[, 1] - 2*sqrt(predWAPLS$v1.boot[, 1]))) & 
+      (predWAPLS$fit[, 1] - 2 * sqrt(predWAPLS$v1.boot[, 1]))) & 
     (X_test <= 
        (predWAPLS$fit[, 1] + 2 * sqrt(predWAPLS$v1.boot[, 1])))
   return(list(MSPE=MSPE, MAE=MAE, CRPS=CRPS, coverage=coverage))
