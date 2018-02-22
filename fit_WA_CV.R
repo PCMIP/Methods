@@ -1,3 +1,15 @@
+# fits weighted-averaging model on cross-validation data
+# y_train_prop A data frame of relative abundances of size N_site by N_taxa 
+# X_train A data frame of the climate covariate of size N_site by 1
+# sse Sum of Squared Error ...
+# nboot Number of bootstrapped samples for prediction
+#
+# returns a list of cross-validation statistics for each held out sample
+# MSPE Squared Prediction Error
+# MAE Absolute Error
+# CRPS Continuous Ranked Probability Score
+# coverage Empirical 95% coverage rate
+
 fit_WA_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
   ## WA reconstruction - subset to deal with all zero occurrence species
   zeros_idx <- which(colSums(y_train_prop) == 0)
