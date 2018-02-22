@@ -1,0 +1,22 @@
+fit_WA_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
+  ## WA reconstruction - subset to deal with all zero occurrence species
+  zeros_idx <- which(colSums(y_train_prop) == 0)
+  if (length(zeros_idx) > 0) {
+    modWA <- rioja::WA(y_train_prop[, - zeros_idx], X_train, ...)
+    predWA <- predict(modWA, y_test_prop[, - zeros_idx], sse=TRUE, nboot=1000, ...)
+  } else {
+    ## no data to subset
+    modWA <- rioja::WA(y_train_prop, X_train, ...)
+    predWA <- predict(modWA, y_test_prop, sse=TRUE, nboot=1000, ...)
+  }
+  source(here("functions", "makeCRPSGauss.R"))
+  CRPS <- makeCRPSGauss(predWA$fit[, 1],
+                        sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2), X_test)
+  MAE <- abs(predWA$fit[, 1] - X_test)
+  MSPE <- (predWA$fit[, 1] - X_test)^2
+  coverage <- (X_test >=
+                 (predWA$fit[, 1] - 2*sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2)) &
+                 (X_test <= (predWA$fit[, 1] + 2*sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2))))
+  return(list(MSPE=MSPE, MAE=MAE, CRPS=CRPS, coverage=coverage))
+}
+
