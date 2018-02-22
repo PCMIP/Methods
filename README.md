@@ -10,6 +10,6 @@ Methods implemented include:
 
 Current statistics used to assess model calibration quality are:
 * MSPE: Mean Squared Prediction Error
-* AME: Ansolute Mean Error
+* AME: Absolute Mean Error
 * CRPS: Continuous Ranked Probability Score
 * coverage: Empirical 95% coverage rate
