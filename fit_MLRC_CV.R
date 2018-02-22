@@ -17,10 +17,10 @@ fit_MLRC_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
   if (length(zeros_idx) > 0) {
     modMLRC <- rioja::MLRC(y_train_prop[, - zeros_idx], X_train)
     predMLRC <- predict(modMLRC, y_test_prop[, - zeros_idx],
-                        sse=TRUE, nboot=1000)
+                        sse=sse, nboot=nboot)
   } else {
     modMLRC <- rioja::MLRC(y_train_prop, X_train)
-    predMLRC <- predict(modMLRC, y_test_prop, sse=TRUE, nboot=1000)
+    predMLRC <- predict(modMLRC, y_test_prop, sse=sse, nboot=nboot)
   }
   CRPS <- makeCRPSGauss(predMLRC$fit[, 1],
                         sqrt(predMLRC$v1.boot[, 1]^2 + predMLRC$v2.boot[1]^2),
