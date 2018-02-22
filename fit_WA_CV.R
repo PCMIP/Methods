@@ -15,11 +15,11 @@ fit_WA_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
   zeros_idx <- which(colSums(y_train_prop) == 0)
   if (length(zeros_idx) > 0) {
     modWA <- rioja::WA(y_train_prop[, - zeros_idx], X_train, ...)
-    predWA <- predict(modWA, y_test_prop[, - zeros_idx], sse=TRUE, nboot=1000, ...)
+    predWA <- predict(modWA, y_test_prop[, - zeros_idx], sse=sse, nboot=nboot, ...)
   } else {
     ## no data to subset
     modWA <- rioja::WA(y_train_prop, X_train, ...)
-    predWA <- predict(modWA, y_test_prop, sse=TRUE, nboot=1000, ...)
+    predWA <- predict(modWA, y_test_prop, sse=sse, nboot=nboot, ...)
   }
   source(here("functions", "makeCRPSGauss.R"))
   CRPS <- makeCRPSGauss(predWA$fit[, 1],
