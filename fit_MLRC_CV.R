@@ -10,7 +10,7 @@
 # CRPS Continuous Ranked Probability Score
 # coverage Empirical 95% coverage rate
 
-fit_MLRC_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
+fit_MLRC_CV <- function(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nboot=1000, ...) {
   
   ## MLRC reconstruction - subset to deal with all zero occurrence species
   zeros_idx <- which(colSums(y_train_prop) == 0)
