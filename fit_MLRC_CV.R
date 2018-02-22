@@ -22,7 +22,6 @@ fit_MLRC_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
     modMLRC <- rioja::MLRC(y_train_prop, X_train)
     predMLRC <- predict(modMLRC, y_test_prop, sse=TRUE, nboot=1000)
   }
-  source(here("functions", "makeCRPSGauss.R"))
   CRPS <- makeCRPSGauss(predMLRC$fit[, 1],
                         sqrt(predMLRC$v1.boot[, 1]^2 + predMLRC$v2.boot[1]^2),
                         X_test)

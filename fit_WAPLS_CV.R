@@ -20,7 +20,6 @@ fit_WAPLS_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
     modWAPLS <- rioja::WAPLS(y_train_prop, X_train)     
     predWAPLS <- predict(modWAPLS, y_test_prop, sse=TRUE, nboot=1000)
   }
-  source(here("functions", "makeCRPSGauss.R"))
   CRPS <- makeCRPSGauss(predWAPLS$fit[, 1], sqrt(predWAPLS$v1.boot[, 1]),
                         X_test)
   MSPE <- (predWAPLS$fit[, 1] - X_test)^2

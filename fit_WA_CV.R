@@ -21,7 +21,6 @@ fit_WA_CV <- function(y_train_prop, X_train, sse=TRUE, nboot=1000, ...) {
     modWA <- rioja::WA(y_train_prop, X_train, ...)
     predWA <- predict(modWA, y_test_prop, sse=sse, nboot=nboot, ...)
   }
-  source(here("functions", "makeCRPSGauss.R"))
   CRPS <- makeCRPSGauss(predWA$fit[, 1],
                         sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2), X_test)
   MAE <- abs(predWA$fit[, 1] - X_test)
