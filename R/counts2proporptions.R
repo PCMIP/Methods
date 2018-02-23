@@ -7,6 +7,6 @@
 
 counts2proportions <- function(counts){
 
-  return(t(apply(counts, 1, function(x) if (sum(x)>0) {x/sum(x)} else {0})))
+  return(t(apply(counts, 1, function(x) { if (sum(x)>0) {x/sum(x)} else {0} })))
   
 }

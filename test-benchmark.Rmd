@@ -22,23 +22,36 @@ y <- matrix(as.numeric(y), dim(y))
 colnames(y) <- names
 rownames(y) <- sitenames
 str(y)
+## Set NAs to 0
+y[is.na(y)] <- 0
 ```
 
 ```{r}
 clim <- read.csv("~/benchmark-data/Pollen/Whitmore/whitmore_worldclim_10min.csv")
 str(clim)
 X <- clim$Tann
-names(X) <- as.character(clim$SITENAME)
+names(X) <- as.character(clim$ID2)
 all.equal(rownames(y), names(X))
 ## get same values
 X <- X[match(rownames(y), names(X))]
 y <- y[match(names(X), rownames(y)), ]
+all.equal(rownames(y), names(X))
+
+## remove NA climate 
+na_idx <- which(is.na(X))
+y <- y[-na_idx, ]
+X <- X[-na_idx]
+## check if any NAs
+sum(is.na(y))
+sum(is.na(X))
+## make sure colnames are still ok
 all.equal(rownames(y), names(X))
 ```
 
 
 ```{r}
 library(Methods)
-make_CV(y=y, X=X, model_name="WA", k_fold=2)
-make_CV()
+model_name="WA"
+make_CV(y=y, X=X, model_name=model_name, kfold=2)
+
 ```
