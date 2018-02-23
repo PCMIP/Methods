@@ -13,7 +13,7 @@
 # coverage Empirical 95% coverage rate
 
 fit_MAT_CV <- function(y_train_prop, y_test_prop, X_train, X_test,  
-                       k=k, sse=TRUE, nboot=1000, lean=FALSE) {#, ...) {
+                       k=k, sse=TRUE, nboot=nboot, lean=FALSE) {#, ...) {
   ## Modern analogue technique
   modMAT <- rioja::MAT(as.data.frame(y_train_prop), X_train, k=k, lean=lean)#, ...)
   predMAT <- predict(modMAT, as.data.frame(y_test_prop), k=k, sse=sse, nboot=nboot)#, ...)
@@ -27,5 +27,6 @@ fit_MAT_CV <- function(y_train_prop, y_test_prop, X_train, X_test,
                     2 * sqrt(predMAT$v1.boot[, 2]^2+ predMAT$v2.boot[2])) &
         (X_test <= (predMAT$fit.boot[, 2] +
                       2*  sqrt(predMAT$v1.boot[, 2]^2+ predMAT$v2.boot[2]))))
-  return(list(MSPE=MSPE, MAE=MAE, CRPS=CRPS, coverage=coverage))
+  return(list(MSPE=MSPE, MAE=MAE, CRPS=CRPS, coverage=coverage, observations=X_test, 
+              mu=predMAT$fit.boot[, 2], sd=sqrt(predMAT$v1.boot[, 2]^2+ predMAT$v2.boot[2])))
 }

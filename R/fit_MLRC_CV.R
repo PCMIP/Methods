@@ -10,16 +10,16 @@
 # CRPS Continuous Ranked Probability Score
 # coverage Empirical 95% coverage rate
 
-fit_MLRC_CV <- function(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nboot=1000, ...) {
+fit_MLRC_CV <- function(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nboot=nboot, ...) {
   
   ## MLRC reconstruction - subset to deal with all zero occurrence species
   zeros_idx <- which(colSums(y_train_prop) == 0)
   if (length(zeros_idx) > 0) {
-    modMLRC <- rioja::MLRC(y_train_prop[, - zeros_idx], X_train)
+    modMLRC <- rioja::MLRC(y_train_prop[, - zeros_idx], as.numeric(X_train))
     predMLRC <- predict(modMLRC, y_test_prop[, - zeros_idx],
                         sse=sse, nboot=nboot)
   } else {
-    modMLRC <- rioja::MLRC(y_train_prop, X_train)
+    modMLRC <- rioja::MLRC(y_train_prop, as.numeric(X_train))
     predMLRC <- predict(modMLRC, y_test_prop, sse=sse, nboot=nboot)
   }
   CRPS <- makeCRPSGauss(predMLRC$fit[, 1],
@@ -31,5 +31,6 @@ fit_MLRC_CV <- function(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nb
                              2*sqrt(predMLRC$v1.boot[, 1]^2 + predMLRC$v2.boot[1]^2))) & 
     (X_test <= (predMLRC$fit[, 1] + 
                   2 * sqrt(predMLRC$v1.boot[, 1]^2 + predMLRC$v2.boot[1]^2)))
-  return(list(MSPE=MSPE, MAE=MAE, CRPS=CRPS, coverage=coverage))
+  return(data.frame(MSPE=MSPE, MAE=MAE, CRPS=CRPS, coverage=coverage, observations=X_test, mu=predMLRC$fit[, 1], 
+              sd=sqrt(predMLRC$v1.boot[, 1]^2 + predMLRC$v2.boot[1]^2)))
 }

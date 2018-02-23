@@ -29,6 +29,7 @@ fit_WA_CV <- function(y_train_prop, y_test_prop, X_train, X_test,
   coverage <- (X_test >=
                  (predWA$fit.boot[, 1] - 2*sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2)) &
                  (X_test <= (predWA$fit.boot[, 1] + 2*sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2))))
-  return(list(MSPE=MSPE, MAE=MAE, CRPS=CRPS, coverage=coverage))
+  return(data.frame(MSPE=MSPE, MAE=MAE, CRPS=CRPS, coverage=coverage, observations=X_test, 
+                    mu=predWA$fit.boot[,1], sd=sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2)))
 }
 

@@ -6,6 +6,9 @@
 ##
 make_CV <- function(y, X, model_name, kfold) {
 
+  # y=y[1:10,]
+  # X=X[1:10]
+  
   N <- nrow(y)
   ## randomly permute the sample indices into folds
   folds <- cut(sample(1:N, N), breaks=kfold, labels=FALSE)
@@ -42,10 +45,14 @@ make_CV_fold <- function (i, model_name, y, X, folds) {#, ...) {
 
   if (model_name=="WA") {
     out <- fit_WA_CV(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, 
-                     nboot=1000)#, ...)
+                     nboot=100)#, ...)
   } else  if (model_name=="MAT") {
     out <- fit_MAT_CV(y_train_prop, y_test_prop, X_train, X_test, k=3,
-                      sse=TRUE, nboot=1000, lean=FALSE)#, ...)
+                      sse=TRUE, nboot=100, lean=FALSE)#, ...)
+  } else if (model_name=='MLRC'){
+    out <- fit_MLRC_CV(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nboot=100)
+  } else if (model_name=='RF'){
+    out <- fit_RF_CV(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nboot=100)
   }
-  return(data.frame(CRPS=out$CRPS, MSPE=out$MSPE, MAE=out$MAE, coverage=out$coverage))
+  return(data.frame(CRPS=out$CRPS, MSPE=out$MSPE, MAE=out$MAE, coverage=out$coverage, observations=out$observations, mu=out$mu, sd=out$sd))
 }
