@@ -12,11 +12,16 @@ make_CV <- function(y, X, model_name, kfold) {
 
   ## run the cross-validation subroutine, can parallelize this later
   # foo <- seq(1, kfold)
-  out <- sapply(1:kfold, FUN=make_CV_fold, model_name=model_name, y=y, X=X,
-                folds=folds)
+  library(dplyr)
+  library(purrr)
+  out <- (1:kfold)  %>% 
+    purrr::map(function(i){ make_CV_fold(i = i, model_name=model_name, y=y, X=X,
+                folds=folds)}) %>% bind_rows()
+  
   # out <- make_CV_fold(1, model_name = model_name, y=y, X=X, folds=folds)
+  ## 
 
-  return(list(CRPS=out$CRPS, MSPE=out$MSPE, MAE=out$MAE, coverage=out$coverage))
+  return(out)
 }
 
 
@@ -40,5 +45,5 @@ make_CV_fold <- function (i, model_name, y, X, folds) {#, ...) {
   } else  if (model_name=="MAT") {
     out <- fit_MAT_CV(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nboot=1000)#, ...)
   }
-  return(list(CRPS=out$CRPS, MSPE=out$MSPE, MAE=out$MAE, coverage=out$coverage))
+  return(data.frame(CRPS=out$CRPS, MSPE=out$MSPE, MAE=out$MAE, coverage=out$coverage))
 }
