@@ -54,4 +54,7 @@ library(Methods)
 model_name="WA"
 make_CV(y=y, X=X, model_name=model_name, kfold=2)
 
+model_name="MAT"
+make_CV(y=y, X=X, model_name=model_name, kfold=2)
+
 ```

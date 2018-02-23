@@ -41,9 +41,11 @@ make_CV_fold <- function (i, model_name, y, X, folds) {#, ...) {
   X_test <- c(X[idx_test])
 
   if (model_name=="WA") {
-    out <- fit_WA_CV(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nboot=1000)#, ...)
+    out <- fit_WA_CV(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, 
+                     nboot=1000)#, ...)
   } else  if (model_name=="MAT") {
-    out <- fit_MAT_CV(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nboot=1000)#, ...)
+    out <- fit_MAT_CV(y_train_prop, y_test_prop, X_train, X_test, k=3,
+                      sse=TRUE, nboot=1000, lean=FALSE)#, ...)
   }
   return(data.frame(CRPS=out$CRPS, MSPE=out$MSPE, MAE=out$MAE, coverage=out$coverage))
 }

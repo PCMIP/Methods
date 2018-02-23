@@ -3,7 +3,7 @@
 # X_train A data frame of the climate covariate of size N_site by 1
 # k is the number of analogs
 # sse Sum of Squared Error ...
-# n.boot Number of bootstrapped samples for prediction
+# nboot Number of bootstrapped samples for prediction
 # lean verbose model output
 #
 # returns a list of cross-validation statistics for each held out sample
@@ -12,10 +12,11 @@
 # CRPS Continuous Ranked Probability Score
 # coverage Empirical 95% coverage rate
 
-fit_MAT_CV <- function(y_train_prop, X_train, k=k, sse=TRUE, n.boot=1000, lean=FALSE, ...) {
+fit_MAT_CV <- function(y_train_prop, y_test_prop, X_train, X_test,  
+                       k=k, sse=TRUE, nboot=1000, lean=FALSE) {#, ...) {
   ## Modern analogue technique
-  modMAT <- rioja::MAT(as.data.frame(y_train_prop), X_train, k=k, lean=lean, ...)
-  predMAT <- predict(modMAT, as.data.frame(y_test_prop), k=k, sse=sse, n.boot=n.boot, ...)
+  modMAT <- rioja::MAT(as.data.frame(y_train_prop), X_train, k=k, lean=lean)#, ...)
+  predMAT <- predict(modMAT, as.data.frame(y_test_prop), k=k, sse=sse, nboot=nboot)#, ...)
   CRPS <- makeCRPSGauss(
     predMAT$fit.boot[, 2],
     sqrt(predMAT$v1.boot[, 2]^2+ predMAT$v2.boot[2]),X_test)
