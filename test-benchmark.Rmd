@@ -58,3 +58,24 @@ model_name="MAT"
 make_CV(y=y, X=X, model_name=model_name, kfold=2)
 
 ```
+
+
+
+```{r}
+library(rioja)
+nboot <- 100
+N <- dim(y)[1]
+boot_MA <- matrix(0, N, nboot)
+
+## drop rare taxa
+drop_idx <- which((apply(y, 2, sum) / sum(y)) < 0.01)
+y <- y[, -drop_idx]
+y_prop <- counts2proportions(y[1:500, ])
+for (i in 1:nboot) {
+  modMAT <- rioja::MAT(as.data.frame(y_prop), X[1:500], k=5, lean=TRUE)
+  boot_MA[, i] <- predict(modMAT, as.data.frame(y_prop), k=5, sse=TRUE, n.boot=1)$fit[, 1]
+  
+  
+  
+}
+```
