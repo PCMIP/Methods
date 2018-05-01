@@ -10,9 +10,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here)
 ```
 
-```{r}
-dat <- readRDS("~/benchmark-data/Pollen/Whitmore/whitmore_pollen.rds")
-str(dat)
+```{r, results='hide', echo=FALSE}
+dat <- readRDS("../benchmark-data/Pollen/Whitmore/whitmore_pollen.rds")
+# str(dat)
 y <- as.matrix(dat[[1]])
 ## drop site name
 sitenames <- y[, 1]
@@ -21,40 +21,84 @@ names <- colnames(y)
 y <- matrix(as.numeric(y), dim(y))
 colnames(y) <- names
 rownames(y) <- sitenames
-str(y)
+# str(y)
 ## Set NAs to 0
 y[is.na(y)] <- 0
 ```
 
 ```{r}
-clim <- read.csv("~/benchmark-data/Pollen/Whitmore/whitmore_worldclim_10min.csv")
-str(clim)
+clim <- read.csv("../benchmark-data/Pollen/Whitmore/whitmore_worldclim_10min.csv")
+# str(clim)
 X <- clim$Tann
 names(X) <- as.character(clim$ID2)
-all.equal(rownames(y), names(X))
+# all.equal(rownames(y), names(X))
 ## get same values
 X <- X[match(rownames(y), names(X))]
 y <- y[match(names(X), rownames(y)), ]
-all.equal(rownames(y), names(X))
+# all.equal(rownames(y), names(X))
 
 ## remove NA climate 
 na_idx <- which(is.na(X))
 y <- y[-na_idx, ]
 X <- X[-na_idx]
-## check if any NAs
-sum(is.na(y))
-sum(is.na(X))
-## make sure colnames are still ok
-all.equal(rownames(y), names(X))
+# ## check if any NAs
+# sum(is.na(y))
+# sum(is.na(X))
+# ## make sure colnames are still ok
+# all.equal(rownames(y), names(X))
 ```
 
 
 ```{r}
 library(Methods)
+library(ggplot2)
+
+# y=y[1:200,]
+# X=X[1:200]
+
 model_name="WA"
-make_CV(y=y, X=X, model_name=model_name, kfold=2)
+WA=make_CV(y=y, X=X, model_name=model_name, kfold=2)
 
 model_name="MAT"
-make_CV(y=y, X=X, model_name=model_name, kfold=2)
+MAT=make_CV(y=y, X=X, model_name=model_name, kfold=2)
+
+model_name="MLRC"
+MLRC=make_CV(y=y, X=X, model_name=model_name, kfold=2)
+
+model_name="RF"
+RF=make_CV(y=y, X=X, model_name=model_name, kfold=2)
+
+out = rbind(data.frame(WA, method=rep('WA', nrow(WA))), 
+            data.frame(MAT, method=rep('MAT', nrow(MAT))),
+            data.frame(MLRC, method=rep('MLRC', nrow(MLRC))),
+             data.frame(RF, method=rep('RF', nrow(RF))))
+
+ggplot(data=out, aes(x=observations/10, y=mu/10, color=method)) + 
+  geom_abline(intercept=0, slope=1) + 
+  geom_point() + 
+  xlab('Observed') +
+  ylab('Predicted') +
+  theme_bw()
+ggsave('figures/model_vs_data.pdf')
+
+ggplot(data=out, aes(x=observations/10, y=mu/10, color=method)) + 
+  geom_abline(intercept=0, slope=1) + 
+  geom_point() + 
+  geom_smooth(method='lm',formula=y~x) +
+  xlab('Observed') +
+  ylab('Predicted') +
+  theme_bw()
+ggsave('figures/model_vs_data_best_fit_line.pdf')
+
+
+ggplot(data=out) + 
+  geom_abline(intercept=0, slope=1) + 
+  geom_point(aes(x=observations/10, y=mu/10, color=method)) + 
+    geom_pointrange(aes(x=observations/10, y=mu/10, ymin=mu/10-sd, ymax=mu/10+sd, color=method)) +
+  xlab('Observed') +
+  ylab('Predicted') +
+  theme_bw()
+ggsave('figures/model_vs_data_best_uncertainty.pdf')
+
 
 ```

@@ -14,9 +14,9 @@ fit_RF_CV <- function(y_train_prop, y_test_prop, X_train, X_test,
                       sse=TRUE, nboot=1000) {#, ...) {
   library(randomForest)
   ## Random Forest
-  train <- data.frame(moisture=X_train, y_train)
-  test <- data.frame(y_test)
-  rf <- randomForest(moisture ~ ., data = train)
+  train <- data.frame(covar=X_train, y_train_prop)
+  test <- data.frame(y_test_prop)
+  rf <- randomForest(covar ~ ., data = train)
   # CRPS <- makeCRPSGauss(t(matrix(predict(rf, test, predict.all=TRUE)$individual, 
   #                           length(idx_test), 500)), X_test)
   # CRPS <- abs(predict(rf, test) - X_test)
