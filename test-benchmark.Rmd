@@ -27,7 +27,7 @@ y[is.na(y)] <- 0
 ```
 
 ```{r}
-clim <- read.csv("../benchmark-data/Pollen/Whitmore/whitmore_worldclim_10min.csv")
+clim <- read.csv("../benchmark-data/Climate/Worldclim/whitmore_worldclim_10min.csv")
 # str(clim)
 X <- clim$Tann
 names(X) <- as.character(clim$ID2)
@@ -51,10 +51,31 @@ X <- X[-na_idx]
 
 ```{r}
 library(Methods)
+library(magrittr)
 library(ggplot2)
 
-# y=y[1:200,]
-# X=X[1:200]
+## subset the rare species
+## N = 2314827
+N <- sum(y)
+
+## remove species that are less than 0.5% of the total
+subset_count <- 0.005 * sum(y)
+subset_idx <- apply(y, 2, sum) < subset_count
+
+## removing 109252 counts and 74 species
+sum(y[, subset_idx])
+y <- y[, !subset_idx]
+
+## still have over 95% of all pollen counts
+sum(y) / N
+
+##
+N <- sum(y)
+
+
+## subset for testing
+y=y[1:501, ]
+X=X[1:501]
 
 model_name="WA"
 WA=make_CV(y=y, X=X, model_name=model_name, kfold=2)
@@ -68,39 +89,75 @@ MLRC=make_CV(y=y, X=X, model_name=model_name, kfold=2)
 model_name="RF"
 RF=make_CV(y=y, X=X, model_name=model_name, kfold=2)
 
-out = rbind(data.frame(WA, method=rep('WA', nrow(WA))), 
-            data.frame(MAT, method=rep('MAT', nrow(MAT))),
-            data.frame(MLRC, method=rep('MLRC', nrow(MLRC))),
-             data.frame(RF, method=rep('RF', nrow(RF))))
+model_name="BUMMER"
+## note: use vb=TRUE for large datasets, vb=FALSE is more accurate
+BUMMER=make_CV(y=y, X=X, model_name=model_name, kfold=2, 
+               n_samples=500, n_grid=500,
+               algorithm="fullrank",
+               pooled=FALSE, vb=FALSE)
 
-ggplot(data=out, aes(x=observations/10, y=mu/10, color=method)) + 
+## pull out predictions and reformat output
+X_pred_BUMMER <- BUMMER$X_pred
+BUMMER$mu <- apply(X_pred_BUMMER, 1, mean)
+BUMMER$sd <- apply(X_pred_BUMMER, 1, sd)
+BUMMER$X_pred <- NULL
+
+out = rbind(data.frame(WA, method='WA'), 
+            data.frame(MAT, method='MAT'),
+            data.frame(MLRC, method='MLRC'),
+            data.frame(RF, method='RF'),
+            data.frame(BUMMER, method='BUMMER'))
+
+ggplot(data=out, aes(x=observations, y=mu, color=method)) + 
   geom_abline(intercept=0, slope=1) + 
   geom_point() + 
   xlab('Observed') +
   ylab('Predicted') +
   theme_bw()
-ggsave('figures/model_vs_data.pdf')
+# ggsave('figures/model_vs_data.pdf')
 
-ggplot(data=out, aes(x=observations/10, y=mu/10, color=method)) + 
+ggplot(data=out, aes(x=observations, y=mu, color=method)) + 
   geom_abline(intercept=0, slope=1) + 
   geom_point() + 
   geom_smooth(method='lm',formula=y~x) +
   xlab('Observed') +
   ylab('Predicted') +
   theme_bw()
-ggsave('figures/model_vs_data_best_fit_line.pdf')
+# ggsave('figures/model_vs_data_best_fit_line.pdf')
 
 
 ggplot(data=out) + 
   geom_abline(intercept=0, slope=1) + 
-  geom_point(aes(x=observations/10, y=mu/10, color=method)) + 
-    geom_pointrange(aes(x=observations/10, y=mu/10, ymin=mu/10-sd, ymax=mu/10+sd, color=method)) +
+  geom_point(aes(x=observations, y=mu, color=method)) + 
+    geom_pointrange(aes(x=observations, y=mu, ymin=mu-2*sd, ymax=mu+2*sd, color=method)) +
   xlab('Observed') +
   ylab('Predicted') +
   theme_bw()
-ggsave('figures/model_vs_data_best_uncertainty.pdf')
+# ggsave('figures/model_vs_data_best_uncertainty.pdf')
 
+## predictive scores
 
+## MSPE
+g1 <- ggplot(data=out) + 
+  geom_violin(aes(x=method, y=MSPE, fill=method)) +
+  stat_summary(aes(x=method, y=MSPE, fill=method),
+               fun.y=median, geom="point") +
+  theme_bw()
+
+## MAE
+g2 <- ggplot(data=out) + 
+  geom_violin(aes(x=method, y=MAE, fill=method)) +
+  stat_summary(aes(x=method, y=MAE, fill=method),
+               fun.y=median, geom="point") +
+  theme_bw()
+
+## CRPS
+g3 <- ggplot(data=out) + 
+  geom_violin(aes(x=method, y=CRPS, fill=method)) +
+    stat_summary(aes(x=method, y=CRPS, fill=method), 
+                 fun.y=median, geom="point") +
+  theme_bw()
+multiplot(g1, g2, g3, cols=1)
 ```
 
 

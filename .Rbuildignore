@@ -1,2 +1,3 @@
-^.*\.Rproj$
+^Methods\.Rproj$
 ^\.Rproj\.user$
+^\.travis\.yml$

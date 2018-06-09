@@ -1,13 +1,17 @@
 Package: Methods
-Type: Package
-Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
+Title: What the Package Does (Title Case)
+Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: GPL (>=3)
 Encoding: UTF-8
 LazyData: true
-Imports:
-    rioja
+ByteCompile: true
+Depends: R (>= 3.4.0), Rcpp (>= 0.12.17), methods
+Imports: rstan (>= 2.17.3), rstantools (>= 1.5.0), dplyr (>= 0.7.4), purrr (>= 0.2.4), Rcpp (>= 0.12.17), magrittr (>= 1.5)
+LinkingTo: StanHeaders (>= 2.17.2), rstan (>= 2.17.3), BH (>= 1.66.0-1), Rcpp (>= 0.12.17), RcppEigen (>= 0.3.3.4.0), rioja (>= 0.9-15.1)
+SystemRequirements: GNU make
+NeedsCompilation: yes
+RoxygenNote: 6.0.1

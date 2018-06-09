@@ -2,3 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+
+
+src/stan_files/*.cc
+src/stan_files/*.hpp
+
+*.o
+*.so
+

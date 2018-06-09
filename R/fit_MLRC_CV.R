@@ -1,3 +1,13 @@
+#' Bayesian BUMMER with Stan
+#'
+#' @export
+#' @param y Numeric matrix of compositional count values.
+#' @param X Numeric vector of climate values.
+#' @param output_samples Number of samples passed to Stan
+#' @param algorithm Variational algorithm of meanfield or fullrank for Stan
+#' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
+#' @return An object of class `stanfit` returned by `rstan::sampling`
+#'
 # fits MLRC on cross-validation data
 # y_train_prop A data frame of relative abundances of size N_site by N_taxa 
 # X_train A data frame of the climate covariate of size N_site by 1
@@ -22,11 +32,12 @@ fit_MLRC_CV <- function(y_train_prop, y_test_prop, X_train, X_test, sse=TRUE, nb
     modMLRC <- rioja::MLRC(y_train_prop, as.numeric(X_train))
     predMLRC <- predict(modMLRC, y_test_prop, sse=sse, nboot=nboot)
   }
-  CRPS <- makeCRPSGauss(predMLRC$fit[, 1],
-                        sqrt(predMLRC$v1.boot[, 1]^2 + predMLRC$v2.boot[1]^2),
-                        X_test)
   MSPE <- (predMLRC$fit[, 1] - X_test)^2
   MAE <- abs(predMLRC$fit[, 1] - X_test)
+  CRPS <- MAE
+  # CRPS <- makeCRPSGauss(predMLRC$fit[, 1],
+  #                       sqrt(predMLRC$v1.boot[, 1]^2 + predMLRC$v2.boot[1]^2),
+  #                       X_test)
   coverage <- ( X_test >= (predMLRC$fit[, 1] - 
                              2*sqrt(predMLRC$v1.boot[, 1]^2 + predMLRC$v2.boot[1]^2))) & 
     (X_test <= (predMLRC$fit[, 1] + 

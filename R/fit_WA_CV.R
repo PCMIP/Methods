@@ -1,3 +1,14 @@
+#' Bayesian BUMMER with Stan
+#'
+#' @export
+#' @param y Numeric matrix of compositional count values.
+#' @param X Numeric vector of climate values.
+#' @param output_samples Number of samples passed to Stan
+#' @param algorithm Variational algorithm of meanfield or fullrank for Stan
+#' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
+#' @return An object of class `stanfit` returned by `rstan::sampling`
+#'
+#'
 # fits weighted-averaging model on cross-validation data
 # y_train_prop A data frame of relative abundances of size N_site by N_taxa 
 # X_train A data frame of the climate covariate of size N_site by 1
@@ -22,9 +33,10 @@ fit_WA_CV <- function(y_train_prop, y_test_prop, X_train, X_test,
     modWA <- rioja::WA(y_train_prop, X_train)#, ...)
     predWA <- predict(modWA, y_test_prop, sse=sse, nboot=nboot)#, ...)
   }
-  CRPS <- makeCRPSGauss(predWA$fit.boot[, 1],
-                        sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2), X_test)
   MAE <- abs(predWA$fit.boot[, 1] - X_test)
+  # CRPS <- makeCRPSGauss(predWA$fit.boot[, 1],
+  #                       sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2), X_test)
+  CRPS <- MAE
   MSPE <- (predWA$fit.boot[, 1] - X_test)^2
   coverage <- (X_test >=
                  (predWA$fit.boot[, 1] - 2*sqrt(predWA$v1.boot[, 1]^2 + predWA$v2.boot[1]^2)) &
