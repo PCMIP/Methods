@@ -9,6 +9,8 @@ fit_BUMMER_CV(y_train, y_test, X_train, X_test, n_samples = 1000,
   mcore = TRUE)
 }
 \arguments{
+\item{n_samples}{Number of samples}
+
 \item{algorithm}{Variational algorithm of meanfield or fullrank for Stan}
 
 \item{y}{Numeric matrix of compositional count values.}

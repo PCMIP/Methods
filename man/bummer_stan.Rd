@@ -12,6 +12,8 @@ bummer_stan(y, X, y_pred, n_grid = 1000, n_samples = 1000,
 
 \item{X}{Numeric vector of climate values.}
 
+\item{n_samples}{Number of samples}
+
 \item{algorithm}{Variational algorithm of meanfield or fullrank for Stan}
 
 \item{...}{Arguments passed to `rstan::sampling` (e.g. iter, chains).}

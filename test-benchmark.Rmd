@@ -94,7 +94,7 @@ model_name="BUMMER"
 BUMMER=make_CV(y=y, X=X, model_name=model_name, kfold=2, 
                n_samples=500, n_grid=500,
                algorithm="fullrank",
-               pooled=FALSE, vb=FALSE)
+               pooled=TRUE, vb=FALSE)
 
 ## pull out predictions and reformat output
 X_pred_BUMMER <- BUMMER$X_pred
@@ -139,9 +139,10 @@ ggplot(data=out) +
 
 ## MSPE
 g1 <- ggplot(data=out) + 
-  geom_violin(aes(x=method, y=MSPE, fill=method)) +
-  stat_summary(aes(x=method, y=MSPE, fill=method),
+  geom_violin(aes(x=method, y=sqrt(MSPE), fill=method)) +
+  stat_summary(aes(x=method, y=sqrt(MSPE), fill=method),
                fun.y=median, geom="point") +
+  ylab("RMSPE") +
   theme_bw()
 
 ## MAE

@@ -5,6 +5,7 @@
 #' @param X Numeric vector of climate values.
 #' @param output_samples Number of samples passed to Stan
 #' @param algorithm Variational algorithm of meanfield or fullrank for Stan
+#' @param n_samples Number of samples
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'
@@ -50,8 +51,8 @@ fit_BUMMER_CV <- function(y_train, y_test, X_train, X_test,
                   }))
   coverage <- ( (X_test >= CI[, 1]) & (X_test <= CI[, 2]) )
   out <- list(MSPE=MSPE, MAE=MAE, CRPS=CRPS, coverage=coverage, 
-       observations=X_test, mu=apply(X_pred, 2, mean), 
-       sd = apply(X_pred, 2, sd), X_pred=t(X_pred))
+              observations=X_test, mu=apply(X_pred, 2, mean), 
+              sd = apply(X_pred, 2, sd), X_pred=t(X_pred))
   
   ## weird trick to allow a matrix in a data.frame
   ## https://stackoverflow.com/questions/6143697/data-frame-with-a-column-containing-a-matrix-in-r?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa

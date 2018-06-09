@@ -28,20 +28,20 @@ transformed parameters {
   vector<lower=0>[d] sigma;  
   
   // tobit link
-  for (j in 1:d) {
-    if (censored_a[j] < 1e-4) {
-      a[j] = 1e-4;
-    } else {
-      a[j] = censored_a[j];
-    }
-    if (censored_sigma[j] < 1e-4) {
-      sigma[j] = 1e-4;
-    } else {
-      sigma[j] = censored_sigma[j];
-    }
-  }
-  // a = exp(censored_a);
-  // sigma = exp(censored_sigma);
+  // for (j in 1:d) {
+  //   if (censored_a[j] < 1e-4) {
+  //     a[j] = 1e-4;
+  //   } else {
+  //     a[j] = censored_a[j];
+  //   }
+  //   if (censored_sigma[j] < 1e-4) {
+  //     sigma[j] = 1e-4;
+  //   } else {
+  //     sigma[j] = censored_sigma[j];
+  //   }
+  // }
+  a = exp(censored_a);
+  sigma = exp(censored_sigma);
 
   for (i in 1:N) {
     for (j in 1:d) {

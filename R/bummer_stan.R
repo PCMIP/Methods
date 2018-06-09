@@ -5,6 +5,7 @@
 #' @param X Numeric vector of climate values.
 #' @param output_samples Number of samples passed to Stan
 #' @param algorithm Variational algorithm of meanfield or fullrank for Stan
+#' @param n_samples Number of samples
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'

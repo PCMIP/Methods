@@ -56,9 +56,40 @@ ggplot(plotData, aes(x=Wetness, y=Count, color=species, group=species)) +
   labs(x="Water Table Depth", y="Composition")  
 
 
+##
+##
+##
+# n_grid=100
+# s_X <- sd(X)
+# ## setup grid for importance sampling
+# X_grid <- seq(from=min(X) - 1.25*s_X, 
+#               to=max(X) + 1.25*s_X, length=n_grid)
+# 
+# dat_fit <- list(y=y, X=X, N=nrow(y), d=ncol(y), y_pred=y_pred, 
+#                 N_pred=nrow(y_pred), X_grid=X_grid, N_grid=length(X_grid))
+# 
+# inits <- list(censored_a=runif(dat_fit$d, 0.5, 1.5), 
+#               mu_a = 1, sigma_a = 1, 
+#               censored_sigma=runif(dat_fit$d, 0.5, 1.5), 
+#               mu_sigma = 1, sigma_sigma = 1,
+#               mu=runif(dat_fit$d, -0.5, 0.5), 
+#               mu_mu=0, sigma_mu=1,
+#               alpha=matrix(1, N, d))
+# 
+# ## fit model
+# library(rstan)
+# test <- stan_model(file="~/Methods/src/stan_files/bummer_pooled.stan")
+# out <- rstan::vb(test, data=dat_fit,
+#                  pars=c("alpha", "alpha_pred"), include=FALSE,
+#                  output_samples=100,
+#                  init=inits)
+# 
+# out <- rstan::sampling(test, data=dat_fit,
+#                  pars=c("alpha", "alpha_pred"), include=FALSE,
+#                  init=inits, chains=1)
 
 fit <- bummer_stan(y, X, y_pred, n_grid=100, 
-                   n_samples=500, pooled=TRUE, vb=FALSE)
+                   n_samples=500, pooled=TRUE, vb=TRUE)
 e <- rstan::extract(fit)
 
 plot(apply(e$X_pred, 2, mean) ~ X_pred)
