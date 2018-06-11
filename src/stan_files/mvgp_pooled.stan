@@ -12,6 +12,9 @@ data {
 } 
 parameters {
   matrix[df, d-1] beta;
+  vector[df] mu_beta;
+  cholesky_factor_corr[df] L_Omega_beta;
+  vector<lower=0>[df] sigma_beta;
   // matrix[df, d] beta;
 }
 transformed parameters {
@@ -35,7 +38,16 @@ transformed parameters {
   }  
 }
 model {
-  to_vector(beta) ~ normal(0, 1);
+  matrix[df, df] L_Sigma_beta;
+  for (j in 1:(d-1)) {
+    beta[, j] ~ multi_normal_cholesky(mu_beta, L_Sigma_beta);
+  }
+  mu_beta ~ normal(0, 1);
+  L_Omega_beta ~ lkj_corr_cholesky(2);
+  sigma_beta ~ cauchy(0, 1);
+  L_Sigma_beta = diag_pre_multiply(sigma_beta, L_Omega_beta);
+  
+  
   for (i in 1:N) {
     real alpha_sum;
     vector[d] alpha_plus_y;

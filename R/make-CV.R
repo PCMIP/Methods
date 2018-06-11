@@ -12,13 +12,13 @@
 #' @param vb Run variational Bayes or NUTS HMC sampler
 #' @param mcore Enable multicore on a local maching
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter, chains).
-#' @return An object of 
+#' @return An object of PCMIP
 #'
 #'
 #'
 make_CV <- function(y, X, model_name, kfold,
                     ## Bayesian model options
-                    n_samples=1000, n_grid=1000,
+                    df=6, n_samples=1000, n_grid=1000,
                     algorithm="fullrank",
                     pooled=TRUE, vb=TRUE, mcore=TRUE) {
   library(magrittr)
@@ -49,7 +49,7 @@ make_CV <- function(y, X, model_name, kfold,
   out <- (1:kfold)  %>%
     purrr::map(function(i){
       make_CV_fold(i = i, model_name=model_name, y=y, X=X_center,
-                   folds=folds, n_samples=n_samples, n_grid=n_grid,
+                   folds=folds, df=df, n_samples=n_samples, n_grid=n_grid,
                    algorithm=algorithm,
                    pooled=pooled, vb=vb, mcore=mcore)
     # }) %>% join_lists()#bind_rows()
@@ -103,7 +103,7 @@ make_CV <- function(y, X, model_name, kfold,
 #'
 #'
 make_CV_fold <- function (i, model_name, y, X, folds, 
-                          n_samples=1000, n_grid=1000,
+                          df=6, n_samples=1000, n_grid=1000,
                           algorithm="fullrank",
                           pooled=TRUE, vb=TRUE, mcore=TRUE) {#, ...) {
   
@@ -138,7 +138,10 @@ make_CV_fold <- function (i, model_name, y, X, folds,
                          algorithm=algorithm, pooled=pooled, 
                          vb=vb, mcore=mcore)
   } else if (model_name =='MVGP') {
-    
+    out <- fit_MVGP_CV(y_train, y_test, X_train, X_test, 
+                       df=df, n_samples=n_samples, n_grid=n_grid,
+                       algorithm=algorithm, pooled=pooled, 
+                       vb=vb, mcore=mcore)    
   } else {
     stop("Only available models are WA, MAT, MLRC, RF, BUMMER, or MVGP")
   }

@@ -4,8 +4,8 @@
 \alias{mvgp_stan}
 \title{Bayesian MVGP with Stan}
 \usage{
-mvgp_stan(y, X, y_pred, df = 10, n_grid = 1000, output_samples = 1000,
-  algorithm = "fullrank", ...)
+mvgp_stan(y, X, y_pred, df = 6, n_grid = 1000, n_samples = 1000,
+  algorithm = "fullrank", pooled = TRUE, vb = TRUE, mcore = TRUE, ...)
 }
 \arguments{
 \item{y}{Numeric matrix of compositional count values.}
@@ -16,7 +16,9 @@ mvgp_stan(y, X, y_pred, df = 10, n_grid = 1000, output_samples = 1000,
 
 \item{df}{Integer for the degrees of freedom in the basis expansion}
 
-\item{output_samples}{Number of samples passed to Stan}
+\item{n_grid}{Number of grid locations for importance sampling}
+
+\item{n_samples}{Number of samples passed to Stan}
 
 \item{algorithm}{Variational algorithm of meanfield or fullrank for Stan}
 

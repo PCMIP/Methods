@@ -90,11 +90,12 @@ model_name="RF"
 RF=make_CV(y=y, X=X, model_name=model_name, kfold=2)
 
 model_name="BUMMER"
-## note: use vb=TRUE for large datasets, vb=FALSE is more accurate
+## note: use vb=TRUE for large datasets, vb=FALSE is more accurate (uses MCMC)
+## for real comparisons of model performance, use vb=FALSE
 BUMMER=make_CV(y=y, X=X, model_name=model_name, kfold=2, 
                n_samples=500, n_grid=500,
                algorithm="fullrank",
-               pooled=TRUE, vb=FALSE)
+               pooled=TRUE, vb=TRUE)
 
 ## pull out predictions and reformat output
 X_pred_BUMMER <- BUMMER$X_pred
@@ -102,11 +103,27 @@ BUMMER$mu <- apply(X_pred_BUMMER, 1, mean)
 BUMMER$sd <- apply(X_pred_BUMMER, 1, sd)
 BUMMER$X_pred <- NULL
 
+model_name="MVGP"
+## note: use vb=TRUE for large datasets, vb=FALSE is more accurate (uses MCMC)
+## for real comparisons of model performance, use vb=FALSE
+MVGP=make_CV(y=y, X=X, model_name=model_name, kfold=2, 
+               n_samples=500, n_grid=500,
+               algorithm="fullrank",
+               pooled=FALSE, vb=FALSE)
+
+## pull out predictions and reformat output
+X_pred_MVGP <- MVGP$X_pred
+MVGP$mu <- apply(X_pred_MVGP, 1, mean)
+MVGP$sd <- apply(X_pred_MVGP, 1, sd)
+MVGP$X_pred <- NULL
+
+
 out = rbind(data.frame(WA, method='WA'), 
             data.frame(MAT, method='MAT'),
             data.frame(MLRC, method='MLRC'),
             data.frame(RF, method='RF'),
-            data.frame(BUMMER, method='BUMMER'))
+            data.frame(BUMMER, method='BUMMER'),
+            data.frame(MVGP, method='MVGP'))
 
 ggplot(data=out, aes(x=observations, y=mu, color=method)) + 
   geom_abline(intercept=0, slope=1) + 
@@ -141,7 +158,7 @@ ggplot(data=out) +
 g1 <- ggplot(data=out) + 
   geom_violin(aes(x=method, y=sqrt(MSPE), fill=method)) +
   stat_summary(aes(x=method, y=sqrt(MSPE), fill=method),
-               fun.y=median, geom="point") +
+               fun.y=mean, geom="point") +
   ylab("RMSPE") +
   theme_bw()
 
@@ -149,14 +166,14 @@ g1 <- ggplot(data=out) +
 g2 <- ggplot(data=out) + 
   geom_violin(aes(x=method, y=MAE, fill=method)) +
   stat_summary(aes(x=method, y=MAE, fill=method),
-               fun.y=median, geom="point") +
+               fun.y=mean, geom="point") +
   theme_bw()
 
 ## CRPS
 g3 <- ggplot(data=out) + 
   geom_violin(aes(x=method, y=CRPS, fill=method)) +
     stat_summary(aes(x=method, y=CRPS, fill=method), 
-                 fun.y=median, geom="point") +
+                 fun.y=mean, geom="point") +
   theme_bw()
 multiplot(g1, g2, g3, cols=1)
 ```

@@ -16,6 +16,7 @@ bummer_stan <- function(y, X, y_pred, n_grid=1000,
   if (mcore) {
     options(mc.cores = parallel::detectCores())
   }
+  library(splines)
   s_X <- sd(X)
   ## setup grid for importance sampling
   X_grid <- seq(from=min(X) - 1.25*s_X, 

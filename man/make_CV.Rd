@@ -4,13 +4,15 @@
 \alias{make_CV}
 \title{Cross-validation of Compositional datasets}
 \usage{
-make_CV(y, X, model_name, kfold, n_samples = 1000, n_grid = 1000,
+make_CV(y, X, model_name, kfold, df = 6, n_samples = 1000, n_grid = 1000,
   algorithm = "fullrank", pooled = TRUE, vb = TRUE, mcore = TRUE)
 }
 \arguments{
 \item{y}{Numeric matrix of compositional count values.}
 
 \item{X}{Numeric vector of climate values.}
+
+\item{df}{Integer for the degrees of freedom in the basis expansion}
 
 \item{n_samples}{Number of samples passed to Stan}
 
@@ -26,12 +28,10 @@ make_CV(y, X, model_name, kfold, n_samples = 1000, n_grid = 1000,
 
 \item{y_pred}{Numeric matrix of compositional count values for prediction.}
 
-\item{df}{Integer for the degrees of freedom in the basis expansion}
-
 \item{...}{Arguments passed to `rstan::sampling` (e.g. iter, chains).}
 }
 \value{
-An object of
+An object of PCMIP
 }
 \description{
 Cross-validation of Compositional datasets
